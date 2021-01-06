@@ -92,3 +92,5 @@ signing {
    if (Ci.isRelease)
       sign(publications)
 }
+
+apply(from = "./publish-mpp.gradle.kts")
