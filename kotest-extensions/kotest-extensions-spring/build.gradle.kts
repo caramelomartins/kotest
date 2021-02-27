@@ -2,7 +2,7 @@ plugins {
    id("java")
    kotlin("multiplatform")
    id("java-library")
-   id("org.jetbrains.kotlin.plugin.spring") version "1.4.21-2"
+   id("org.jetbrains.kotlin.plugin.spring") version "1.4.30"
    id("com.adarshr.test-logger")
 }
 
@@ -22,15 +22,14 @@ kotlin {
       }
    }
 
-   targets.all {
-      compilations.all {
-         kotlinOptions {
-            freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlin.RequiresOptIn"
+   sourceSets {
+
+      val commonMain by getting {
+         dependencies {
+            implementation(kotlin("stdlib"))
+            implementation(kotlin("reflect"))
          }
       }
-   }
-
-   sourceSets {
 
       val jvmMain by getting {
          dependencies {
@@ -38,7 +37,6 @@ kotlin {
             implementation(project(Projects.Api))
             implementation(project(Projects.Engine))
             implementation(project(Projects.AssertionsShared))
-            implementation(kotlin("reflect"))
             implementation(Libs.Spring.context)
             implementation(Libs.Spring.test)
             implementation(Libs.Coroutines.coreJvm)
@@ -50,8 +48,13 @@ kotlin {
          dependsOn(jvmMain)
          dependencies {
             implementation(project(Projects.JunitRunner))
-            implementation("org.springframework.boot:spring-boot-starter-test:2.4.2")
+            implementation("org.springframework.boot:spring-boot-starter-test:2.2.5.RELEASE")
          }
+      }
+
+      all {
+         languageSettings.useExperimentalAnnotation("kotlin.time.ExperimentalTime")
+         languageSettings.useExperimentalAnnotation("kotlin.experimental.ExperimentalTypeInference")
       }
    }
 }

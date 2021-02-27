@@ -21,18 +21,11 @@ kotlin {
       }
    }
 
-   targets.all {
-      compilations.all {
-         kotlinOptions {
-            freeCompilerArgs = freeCompilerArgs + "-Xuse-experimental=kotlin.Experimental"
-         }
-      }
-   }
-
    sourceSets {
 
       val jvmMain by getting {
          dependencies {
+            implementation(kotlin("stdlib"))
             implementation(kotlin("reflect"))
             api(project(Projects.AssertionsShared))
             api(project(Projects.Property))
@@ -46,12 +39,12 @@ kotlin {
             implementation(project(Projects.JunitRunner))
          }
       }
-   }
-}
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-   kotlinOptions.freeCompilerArgs += "-Xuse-experimental=kotlin.Experimental"
-   kotlinOptions.jvmTarget = "1.8"
+      all {
+         languageSettings.useExperimentalAnnotation("kotlin.time.ExperimentalTime")
+         languageSettings.useExperimentalAnnotation("kotlin.experimental.ExperimentalTypeInference")
+      }
+   }
 }
 
 tasks.named<Test>("jvmTest") {

@@ -3,12 +3,12 @@ package io.kotest.engine
 import io.kotest.core.Tags
 import io.kotest.core.config.configuration
 import io.kotest.core.filter.TestFilter
-import io.kotest.core.script.ScriptSpec
 import io.kotest.core.spec.Spec
 import io.kotest.core.spec.afterProject
 import io.kotest.core.spec.beforeProject
 import io.kotest.engine.config.ConfigManager
 import io.kotest.engine.config.dumpProjectConfig
+import io.kotest.engine.config.loadAndApplySystemProps
 import io.kotest.engine.extensions.SpecifiedTagsTagExtension
 import io.kotest.engine.launchers.specLauncher
 import io.kotest.engine.listener.TestEngineListener
@@ -40,6 +40,9 @@ class KotestEngine(private val config: KotestEngineConfig) {
 
       // if the engine was invoked with explicit filters, those are registered here
       configuration.registerFilters(config.filters)
+
+      // load and apply system properties from [KotestPropertiesFilename]
+      loadAndApplySystemProps()
    }
 
    /**
@@ -114,14 +117,11 @@ class KotestEngine(private val config: KotestEngineConfig) {
       // scripts always run sequentially
       log("KotestEngine: Launching ${plan.scripts.size} scripts")
       if (plan.scripts.isNotEmpty()) {
-         config.listener.specStarted(ScriptSpec::class)
          plan.scripts.forEach { scriptKClass ->
             log(scriptKClass.java.methods.toList().toString())
             ScriptExecutor(config.listener)
                .execute(scriptKClass)
-               .onFailure { config.listener.specFinished(ScriptSpec::class, it, emptyMap()) }
          }
-         config.listener.specFinished(ScriptSpec::class, null, emptyMap())
          log("KotestEngine: Script execution completed")
       }
 

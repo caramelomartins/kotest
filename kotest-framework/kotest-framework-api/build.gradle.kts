@@ -19,17 +19,9 @@ kotlin {
             }
          }
       }
-      js {
+      js(BOTH) {
          browser()
          nodejs()
-      }
-   }
-
-   targets.all {
-      compilations.all {
-         kotlinOptions {
-            freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlin.RequiresOptIn"
-         }
       }
    }
 
@@ -37,6 +29,8 @@ kotlin {
 
       val commonMain by getting {
          dependencies {
+            implementation(kotlin("reflect"))
+            implementation(kotlin("stdlib"))
             implementation(Libs.Coroutines.coreCommon)
             implementation(Libs.Kotlin.kotlinScriptRuntime)
             implementation(project(Projects.Common))
@@ -56,7 +50,6 @@ kotlin {
       val jvmMain by getting {
          dependsOn(commonMain)
          dependencies {
-            implementation(kotlin("reflect"))
             implementation(Libs.Coroutines.coreJvm)
          }
       }
@@ -78,12 +71,12 @@ kotlin {
             implementation(Libs.JUnitJupiter.engine)
          }
       }
-   }
-}
 
-tasks.named("compileKotlinJs") {
-   this as org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
-   kotlinOptions.moduleKind = "umd"
+      all {
+         languageSettings.useExperimentalAnnotation("kotlin.time.ExperimentalTime")
+         languageSettings.useExperimentalAnnotation("kotlin.experimental.ExperimentalTypeInference")
+      }
+   }
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {

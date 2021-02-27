@@ -1,16 +1,18 @@
 object Libs {
 
-   const val kotlinVersion = "1.4.21"
+   const val kotlinVersion = "1.4.30"
    const val dokkaVersion = "0.10.1"
    const val adarshrTestLoggerVersion = "2.0.0"
    const val gradleVersionsPluginVersion = "0.28.0"
+   const val gradleEnterprisePluginVersion = "3.5.1"
    const val kotestGradlePlugin = "0.1.4"
 
    object Kotlin {
-      private const val kotlinScriptVersion = "1.4.21-2"
+      private const val kotlinScriptVersion = "1.4.30"
       const val kotlinScriptRuntime = "org.jetbrains.kotlin:kotlin-script-runtime:$kotlinVersion"
       const val kotlinScriptUtil = "org.jetbrains.kotlin:kotlin-script-util:$kotlinScriptVersion"
       const val kotlinScriptJvm = "org.jetbrains.kotlin:kotlin-scripting-jvm:$kotlinScriptVersion"
+      const val compilerEmbeddable = "org.jetbrains.kotlin:kotlin-compiler-embeddable:$kotlinVersion"
    }
 
    object Arrow {
@@ -41,7 +43,6 @@ object Libs {
    object Jackson {
       private const val version = "2.11.3"
       const val kotlin = "com.fasterxml.jackson.module:jackson-module-kotlin:$version"
-      const val databind = "com.fasterxml.jackson.core:jackson-databind:$version"
    }
 
    object Koin {
@@ -86,7 +87,7 @@ object Libs {
    }
 
    object Classgraph {
-      const val classgraph = "io.github.classgraph:classgraph:4.8.98"
+      const val classgraph = "io.github.classgraph:classgraph:4.8.102"
    }
 
    object Mocking {
@@ -114,7 +115,7 @@ object Libs {
    }
 
    object Wumpz {
-      const val diffutils = "io.github.java-diff-utils:java-diff-utils:4.5"
+      const val diffutils = "io.github.java-diff-utils:java-diff-utils:4.9"
    }
 
    object TestContainers {
@@ -154,8 +155,13 @@ object Libs {
       const val test = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$version"
    }
 
+   object Serialization {
+      private const val version = "1.0.1"
+      const val json = "org.jetbrains.kotlinx:kotlinx-serialization-json:$version"
+   }
+
    object Ktor {
-      private const val version = "1.5.0"
+      private const val version = "1.5.1"
       const val serverCore = "io.ktor:ktor-server-core:$version"
       const val serverTestHost = "io.ktor:ktor-server-test-host:$version"
       const val clientJs = "io.ktor:ktor-client-js:$version"
@@ -166,7 +172,7 @@ object Libs {
    }
 
    object Klock {
-      private const val version = "1.12.0"
+      private const val version = "2.0.6"
       const val klock = "com.soywiz.korlibs.klock:klock:$version"
    }
 
@@ -177,5 +183,10 @@ object Libs {
 
    object Android {
       const val desugarJdk = "com.android.tools:desugar_jdk_libs:1.0.10"
+   }
+
+   object Wiremock {
+      const val version = "2.27.2"
+      const val wiremock = "com.github.tomakehurst:wiremock:$version"
    }
 }

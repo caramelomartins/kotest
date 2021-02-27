@@ -19,17 +19,9 @@ kotlin {
             }
          }
       }
-      js {
+      js(BOTH) {
          browser()
          nodejs()
-      }
-   }
-
-   targets.all {
-      compilations.all {
-         kotlinOptions {
-            freeCompilerArgs = freeCompilerArgs + "-Xuse-experimental=kotlin.Experimental"
-         }
       }
    }
 
@@ -37,6 +29,8 @@ kotlin {
 
       val commonMain by getting {
          dependencies {
+            implementation(kotlin("stdlib"))
+            implementation(kotlin("reflect"))
             implementation(Libs.Coroutines.coreCommon)
             implementation(Libs.Ktor.clientCore)
          }
@@ -63,6 +57,11 @@ kotlin {
             implementation(project(Projects.AssertionsCore))
             implementation(project(Projects.MockServer))
          }
+      }
+
+      all {
+         languageSettings.useExperimentalAnnotation("kotlin.time.ExperimentalTime")
+         languageSettings.useExperimentalAnnotation("kotlin.experimental.ExperimentalTypeInference")
       }
    }
 }

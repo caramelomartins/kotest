@@ -12,6 +12,7 @@ repositories {
 kotlin {
 
    targets {
+
       jvm {
          compilations.all {
             kotlinOptions {
@@ -19,7 +20,8 @@ kotlin {
             }
          }
       }
-      js {
+
+      js(BOTH) {
          browser()
          nodejs()
       }
@@ -30,25 +32,19 @@ kotlin {
 
       macosX64()
       tvos()
-      watchos()
+//      watchos()
 
       iosX64()
       iosArm64()
       iosArm32()
    }
 
-   targets.all {
-      compilations.all {
-         kotlinOptions {
-            freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlin.RequiresOptIn"
-         }
-      }
-   }
-
    sourceSets {
 
       val commonMain by getting {
          dependencies {
+            implementation(kotlin("stdlib"))
+            implementation(kotlin("reflect"))
             api(project(Projects.Common))
             api(project(Projects.AssertionsShared))
             implementation(Libs.Coroutines.coreCommon)
@@ -58,7 +54,6 @@ kotlin {
       val jvmMain by getting {
          dependsOn(commonMain)
          dependencies {
-            implementation(kotlin("reflect"))
             implementation(Libs.Wumpz.diffutils)
             implementation(Libs.Mifmif.generex)
          }
@@ -100,18 +95,22 @@ kotlin {
          dependsOn(desktopMain)
       }
 
-      val watchosMain by getting {
-         dependsOn(desktopMain)
-      }
+//      val watchosMain by getting {
+//         dependsOn(desktopMain)
+//      }
 
       val tvosMain by getting {
          dependsOn(desktopMain)
+      }
+
+      all {
+         languageSettings.useExperimentalAnnotation("kotlin.time.ExperimentalTime")
+         languageSettings.useExperimentalAnnotation("kotlin.experimental.ExperimentalTypeInference")
       }
    }
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-   kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
    kotlinOptions.jvmTarget = "1.8"
    kotlinOptions.apiVersion = "1.4"
 }

@@ -21,18 +21,11 @@ kotlin {
       }
    }
 
-   targets.all {
-      compilations.all {
-         kotlinOptions {
-            freeCompilerArgs + "-Xopt-in=kotlin.RequiresOptIn"
-         }
-      }
-   }
-
    sourceSets {
 
       val commonMain by getting {
          dependencies {
+            implementation(kotlin("stdlib"))
             implementation(project(Projects.AssertionsShared))
             implementation(Libs.Ktor.clientCore)
          }
@@ -50,6 +43,11 @@ kotlin {
          dependencies {
             implementation(project(Projects.JunitRunner))
          }
+      }
+
+      all {
+         languageSettings.useExperimentalAnnotation("kotlin.time.ExperimentalTime")
+         languageSettings.useExperimentalAnnotation("kotlin.experimental.ExperimentalTypeInference")
       }
    }
 }

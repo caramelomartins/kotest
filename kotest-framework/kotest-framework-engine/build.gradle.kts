@@ -27,18 +27,12 @@ kotlin {
       }
    }
 
-   targets.all {
-      compilations.all {
-         kotlinOptions {
-            freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlin.RequiresOptIn"
-         }
-      }
-   }
-
    sourceSets {
 
       val commonMain by getting {
          dependencies {
+            implementation(kotlin("reflect"))
+            implementation(kotlin("stdlib"))
             api(project(Projects.AssertionsShared))
             implementation(project(Projects.Common))
             // this is API because we want people to be able to use the functionality in their tests
@@ -59,7 +53,6 @@ kotlin {
       val jvmMain by getting {
          dependsOn(commonMain)
          dependencies {
-            implementation(kotlin("reflect"))
             api(Libs.Kotlin.kotlinScriptRuntime)
             implementation(Libs.Kotlin.kotlinScriptUtil)
             implementation(Libs.Kotlin.kotlinScriptJvm)
@@ -84,12 +77,12 @@ kotlin {
             implementation(Libs.Mocking.mockk)
          }
       }
-   }
-}
 
-tasks.named("compileKotlinJs") {
-   this as org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
-   kotlinOptions.moduleKind = "commonjs"
+      all {
+         languageSettings.useExperimentalAnnotation("kotlin.time.ExperimentalTime")
+         languageSettings.useExperimentalAnnotation("kotlin.experimental.ExperimentalTypeInference")
+      }
+   }
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {

@@ -18,7 +18,7 @@ kotlin {
             }
          }
       }
-      js {
+      js(BOTH) {
          browser()
          nodejs()
       }
@@ -28,19 +28,11 @@ kotlin {
 
       macosX64()
       tvos()
-      watchos()
+//      watchos()
 
       iosX64()
       iosArm64()
       iosArm32()
-   }
-
-   targets.all {
-      compilations.all {
-         kotlinOptions {
-            freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlin.RequiresOptIn"
-         }
-      }
    }
 
    sourceSets {
@@ -60,6 +52,11 @@ kotlin {
          dependencies {
             implementation(project(Projects.JunitRunner))
          }
+      }
+
+      all {
+         languageSettings.useExperimentalAnnotation("kotlin.time.ExperimentalTime")
+         languageSettings.useExperimentalAnnotation("kotlin.experimental.ExperimentalTypeInference")
       }
    }
 }

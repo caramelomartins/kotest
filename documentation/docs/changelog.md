@@ -4,9 +4,24 @@ sidebar_label: Changelog
 slug: changelog.html
 ---
 
-### 4.4.0 (RC1) January 2021
 
-Note: Release 4.4.0 bumps the minimum required version of Kotlin to 1.4
+### 4.4.1 January 2021
+
+Note: Release 4.4.1 bumps the minimum required version of Kotlin to 1.4.30
+
+* Fixed allure test grouping #1871
+* Updated shouldBeEmpty and shouldNotBeEmpty to work for nullable references #2055
+* Expose factor in exponential interval in eventually and until #2046
+* Added cap to exponential and fibonacci intervals #2053
+* Fix test name for data driven test when data class contains enum values #2034
+* IntArray not being printed in Assert log #2042
+* Fixed invalid json causing streaming error in json assertions #2045
+* Generation of larger sets via Arb.set throws an exception #2051
+* Avoid creating extra lambdas in blocking forAll #2036
+
+### 4.4.0 January 2021
+
+Note: Release 4.4.0 bumps the minimum required version of Kotlin to 1.4.21
 
 #### Features / Improvements
 
@@ -19,12 +34,10 @@ Note: Release 4.4.0 bumps the minimum required version of Kotlin to 1.4
 * Add matchers for Atomic Booleans #1791
 * Upgrade to Kotlin 1.4.20 #1800
 * Test cases should have their tags appended to the test name if so configured #1804
-* Removed superfluous whitespaces in freeSpec.kt #1819
 * Add functionality to use 'it' without surrounding 'describe' #1827
 * Added inline version for intanceOf alias #1838
 * Add Support for globalAssertSoftly from System Property #1843
 * Helper for temporary directory creation #1862
-* Output from reporters should be single threaded #1895
 * shouldBeBetween not defined for floats #1927
 * Increase arity of checkall / forall property tests to 12 #1929
 * Add more configurations to Email Generator #1941
@@ -44,6 +57,7 @@ Note: Release 4.4.0 bumps the minimum required version of Kotlin to 1.4
 * BehaviorSpec Then assertion shows green in Intellij but should show red #1857
 * AssertionMode.Error doesn't work on FeatureSpec #1864
 * Invalid test usage should throw at runtime #1882
+* Output from reporters should be single threaded #1895
 * Arb.set with a range hangs the test if the given gen inside the set cannot produce enough values for the range #1931
 
 ### 4.3.2 December 2020

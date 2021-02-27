@@ -1,6 +1,7 @@
 plugins {
    id("java")
    kotlin("multiplatform")
+   kotlin("plugin.serialization") version Libs.kotlinVersion
    id("java-library")
    id("com.adarshr.test-logger")
 }
@@ -19,17 +20,9 @@ kotlin {
             }
          }
       }
-      js {
+      js(BOTH) {
          browser()
          nodejs()
-      }
-   }
-
-   targets.all {
-      compilations.all {
-         kotlinOptions {
-            freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlin.RequiresOptIn"
-         }
       }
    }
 
@@ -37,10 +30,9 @@ kotlin {
 
       val commonMain by getting {
          dependencies {
+            implementation(Libs.Serialization.json)
             implementation(project(Projects.AssertionsShared))
             implementation(kotlin("reflect"))
-            implementation(Libs.Jackson.databind)
-            implementation(Libs.Jackson.kotlin)
             implementation(Libs.Jayway.jsonpath)
          }
       }
@@ -56,8 +48,6 @@ kotlin {
 
       val jvmMain by getting {
          dependencies {
-            implementation(Libs.Jackson.databind)
-            implementation(Libs.Jackson.kotlin)
             implementation(Libs.Jayway.jsonpath)
          }
       }
@@ -68,12 +58,12 @@ kotlin {
             implementation(project(Projects.JunitRunner))
          }
       }
-   }
-}
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-   kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
-   kotlinOptions.jvmTarget = "1.8"
+      all {
+         languageSettings.useExperimentalAnnotation("kotlin.time.ExperimentalTime")
+         languageSettings.useExperimentalAnnotation("kotlin.experimental.ExperimentalTypeInference")
+      }
+   }
 }
 
 tasks.named<Test>("jvmTest") {

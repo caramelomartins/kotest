@@ -43,12 +43,15 @@ interface Reflection {
     * Returns a new instan created from the no arg constructor, if supported
     */
    fun <T : Any> newInstanceNoArgConstructor(klass: KClass<T>) : T
+
+   fun <T : Any> isEnumClass(kclass: KClass<T>): Boolean
 }
 
 object BasicReflection : Reflection {
    override fun fqn(kclass: KClass<*>): String? = null
    override fun annotations(kclass: KClass<*>): List<Annotation> = emptyList()
    override fun <T : Any> isDataClass(kclass: KClass<T>): Boolean = false
+   override fun <T : Any> isEnumClass(kclass: KClass<T>): Boolean = false
    override fun paramNames(fn: Function<*>): List<String>? = null
    override fun <T : Any> primaryConstructorMembers(klass: KClass<T>): List<Property>  = emptyList()
    override fun <T : Any> newInstanceNoArgConstructor(klass: KClass<T>): T = TODO("UNSUPPORTED")
@@ -59,6 +62,8 @@ object BasicReflection : Reflection {
  * That is, in order, the FQN, the simple name, or toString.
  */
 fun KClass<*>.bestName(): String = reflection.fqn(this) ?: simpleName ?: this.toString()
+
+fun KClass<*>.qualifiedNameOrNull(): String? = reflection.fqn(this)
 
 /**
  * Finds the first annotation of type T on this class, or returns null if annotations

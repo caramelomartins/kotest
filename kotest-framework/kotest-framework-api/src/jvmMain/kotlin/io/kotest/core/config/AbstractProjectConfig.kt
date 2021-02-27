@@ -12,7 +12,6 @@ import io.kotest.core.listeners.ProjectListener
 import io.kotest.core.test.TestCaseConfig
 import kotlin.reflect.KClass
 import kotlin.time.Duration
-import kotlin.time.ExperimentalTime
 
 /**
  * Project-wide configuration. Extensions returned by an
@@ -48,7 +47,7 @@ abstract class AbstractProjectConfig {
     *  - [FailureFirstSpecExecutionOrder]
     *  - [RandomSpecExecutionOrder]
     */
-   @Deprecated("use the val version. Will be removed in 4.5")
+   @Deprecated("use the val version. Will be removed in 4.6")
    open fun specExecutionOrder(): SpecExecutionOrder? = null
 
    /**
@@ -59,7 +58,7 @@ abstract class AbstractProjectConfig {
    /**
     * The [IsolationMode] set here will be applied if the isolation mode in a spec is null.
     */
-   @Deprecated("use the val version. Will be removed in 4.5")
+   @Deprecated("use the val version. Will be removed in 4.6")
    open fun isolationMode(): IsolationMode? = null
 
    open val isolationMode: IsolationMode? = null
@@ -68,7 +67,6 @@ abstract class AbstractProjectConfig {
     * A global timeout that is applied to all tests if not null.
     * Tests which define their own timeout will override this.
     */
-   @OptIn(ExperimentalTime::class)
    open val timeout: Duration? = null
 
    /**
@@ -98,7 +96,7 @@ abstract class AbstractProjectConfig {
     * Note: For backwards compatibility, setting this value to > 1 will implicitly set
     * [specConcurrentDispatch] to true unless that value has been explicitly set to false.
     */
-   @Deprecated("use the val version. Will be removed in 4.5")
+   @Deprecated("use the val version. Will be removed in 4.6")
    open fun parallelism(): Int? = null
 
    /**
@@ -130,7 +128,7 @@ abstract class AbstractProjectConfig {
     * To enable this feature, set this to true, or set the system property
     * 'kotest.write.specfailures=true'
     */
-   @Deprecated("use the val version. Will be removed in 4.5")
+   @Deprecated("use the val version. Will be removed in 4.6")
    open fun writeSpecFailureFile(): Boolean = false
 
    open val writeSpecFailureFile: Boolean? = null
@@ -144,7 +142,7 @@ abstract class AbstractProjectConfig {
     * If this function returns null then the default of Sequential
     * will be used.
     */
-   @Deprecated("use the val version. Will be removed in 4.5")
+   @Deprecated("use the val version. Will be removed in 4.6")
    open fun testCaseOrder(): TestCaseOrder? = null
 
    open val testCaseOrder: TestCaseOrder? = null

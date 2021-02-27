@@ -1,8 +1,10 @@
 package io.kotest.core.test
 
 import io.kotest.core.SourceRef
+import io.kotest.core.config.ExperimentalKotest
 import io.kotest.core.factory.FactoryId
 import io.kotest.core.internal.tags.allTags
+import io.kotest.core.plan.Descriptor
 import io.kotest.core.sourceRef
 import io.kotest.core.spec.Spec
 
@@ -48,7 +50,13 @@ data class TestCase(
    val factoryId: FactoryId? = null,
    // assertion mode can be set to control errors/warnings in a test
    // if null, defaults will be applied
-   val assertionMode: AssertionMode? = null
+   val assertionMode: AssertionMode? = null,
+
+   // only set for scripts
+   @ExperimentalKotest val descriptor: Descriptor.TestDescriptor? = null,
+
+   // not null if this test has a parent test
+   @ExperimentalKotest val parent: TestCase? = null,
 ) {
 
    val displayName = description.displayName()
@@ -56,7 +64,7 @@ data class TestCase(
    /**
     * Returns true if this test case is a root test inside a spec.
     */
-   @Deprecated("use description.isRootTest(). Will be removed in 4.5")
+   @Deprecated("use description.isRootTest(). Will be removed in 4.6")
    fun isTopLevel(): Boolean = description.isRootTest()
 
    companion object {
@@ -64,16 +72,22 @@ data class TestCase(
       /**
        * Creates a [TestCase] of type [TestType.Test], with default config, and derived source ref.
        */
-      fun test(description: Description.Test, spec: Spec, test: suspend TestContext.() -> Unit): TestCase =
+      fun test(
+         description: Description.Test,
+         spec: Spec,
+         parent: TestCase?,
+         test: suspend TestContext.() -> Unit
+      ): TestCase =
          TestCase(
-            description,
-            spec,
-            test,
-            sourceRef(),
-            TestType.Test,
-            TestCaseConfig(),
-            null,
-            null
+            description = description,
+            spec = spec,
+            test = test,
+            source = sourceRef(),
+            type = TestType.Test,
+            config = TestCaseConfig(),
+            factoryId = null,
+            assertionMode = null,
+            parent = parent,
          )
 
       /**
@@ -82,18 +96,19 @@ data class TestCase(
       fun container(
          description: Description.Test,
          spec: Spec,
+         parent: TestCase?,
          test: suspend TestContext.() -> Unit
-      ): TestCase =
-         TestCase(
-            description,
-            spec,
-            test,
-            sourceRef(),
-            TestType.Container,
-            TestCaseConfig(),
-            null,
-            null
-         )
+      ): TestCase = TestCase(
+         description = description,
+         spec = spec,
+         test = test,
+         source = sourceRef(),
+         type = TestType.Container,
+         config = TestCaseConfig(),
+         factoryId = null,
+         assertionMode = null,
+         parent = parent,
+      )
 
       fun appendTagsInDisplayName(testCase: TestCase): TestCase {
          val tagNames = testCase.allTags().joinToString(", ")

@@ -22,6 +22,14 @@ kotlin {
    }
 
    sourceSets {
+
+      val commonMain by getting {
+         dependencies {
+            implementation(kotlin("stdlib"))
+            implementation(kotlin("reflect"))
+         }
+      }
+
       val jvmTest by getting {
          dependencies {
             implementation(project(Projects.Engine))
@@ -30,6 +38,11 @@ kotlin {
             implementation(project(Projects.Allure))
             implementation(Libs.Jackson.kotlin)
          }
+      }
+
+      all {
+         languageSettings.useExperimentalAnnotation("kotlin.time.ExperimentalTime")
+         languageSettings.useExperimentalAnnotation("kotlin.experimental.ExperimentalTypeInference")
       }
    }
 }

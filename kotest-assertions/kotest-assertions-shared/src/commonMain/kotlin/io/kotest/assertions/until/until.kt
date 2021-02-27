@@ -1,85 +1,135 @@
 package io.kotest.assertions.until
 
 import io.kotest.assertions.failure
-import kotlinx.coroutines.delay
 import kotlin.time.Duration
-import kotlin.time.ExperimentalTime
 import kotlin.time.TimeSource
 import kotlin.time.seconds
+import kotlinx.coroutines.delay
 
-interface UntilListener<in T> {
+fun interface UntilListener<in T> {
    fun onEval(t: T)
 
    companion object {
-      val noop = object : UntilListener<Any?> {
-         override fun onEval(t: Any?) {}
-      }
+      @Deprecated("UntilListener is a functional interface. Simply use a lambda")
+      val noop = UntilListener<Any?> { }
    }
 }
 
-fun <T> untilListener(f: (T) -> Unit) = object : UntilListener<T> {
-   override fun onEval(t: T) {
-      f(t)
-   }
-}
+@Deprecated("UntilListener is a functional interface. Simply use a lambda")
+fun <T> untilListener(f: (T) -> Unit) = UntilListener<T> { t -> f(t) }
+
+data class PatienceConfig(
+   val duration: Duration,
+   val interval: Interval,
+)
 
 /**
- * Executes a function until it returns true or the duration elapses.
+ * Executes a function at 1 second intervals until it returns true, or until a specified duration has elapsed.
+ * If the duration elapses without the function returning true, an error will be thrown.
  *
- * @param f the function to execute
- * @param duration the maximum amount of time to continue trying for success
- * @param interval the delay between invocations
+ * @param duration the duration before an error is thrown
+ * @param f the function to evaluate.
+ *
+ * This method supports suspension.
  */
-@OptIn(ExperimentalTime::class)
-suspend fun until(
+suspend fun until(duration: Duration, f: suspend () -> Boolean) =
+   until(duration, interval = 1.seconds.fixed(), f = f)
+
+/**
+ * Executes a function at a given interval until it returns true, or until a specified duration has elapsed.
+ * If the duration elapses without the function returning true, an error will be thrown.
+ *
+ * @param duration the duration before an error is thrown
+ * @param interval the delay between repeated invocations
+ * @param f the function to evaluate.
+ *
+ * This method supports suspension.
+ */
+suspend fun until(duration: Duration, interval: Interval, f: suspend () -> Boolean) =
+   until(duration = duration, interval = interval, predicate = { it }, f = f)
+
+/**
+ * Executes a function at a given interval until it returns true, or until a specified duration has elapsed.
+ * If the duration elapses without the function returning true, an error will be thrown.
+ *
+ * @param patience specifies the duration and interval.
+ * @param f the function to evaluate
+ *
+ * This method supports suspension.
+ */
+suspend fun until(patience: PatienceConfig, f: suspend () -> Boolean) =
+   until(duration = patience.duration, interval = patience.interval, predicate = { it }, f = f)
+
+/**
+ * Executes the function [f] at a fixed interval until it returns a value that passes the given [predicate],
+ * or until the [duration] has elapsed.
+ *
+ * If the duration elapses without the predicate returning true, an error will be thrown.
+ *
+ * This method supports suspension.
+ */
+suspend fun <T> until(
+   duration: Duration,
+   predicate: suspend (T) -> Boolean,
+   f: suspend () -> T
+): T = until(duration, interval = 1.seconds.fixed(), predicate = predicate, f = f)
+
+/**
+ * Executes the function [f] at a given [interval] until it returns a value that passes the given [predicate],
+ * or until the [duration] has elapsed.
+ *
+ * If the duration elapses without the predicate returning true, an error will be thrown.
+ *
+ * This method supports suspension.
+ */
+suspend fun <T> until(
+   duration: Duration,
+   interval: Interval,
+   predicate: suspend (T) -> Boolean,
+   f: suspend () -> T
+): T = until(duration = duration, interval = interval, predicate = predicate, listener = {}, f = f)
+
+/**
+ * Executes a producer function at a given interval until the given predicate returns true for the last
+ * produced value, or until a specified duration has elapsed. If the duration elapses without the predicate
+ * returning true, an error will be thrown.
+ *
+ * @param patience specifies the duration and interval.
+ * @param predicate a predicate that should return true if the last produced value is valid
+ * @param f the producer function
+ *
+ * This method supports suspension.
+ */
+suspend fun <T> until(
+   patience: PatienceConfig,
+   predicate: suspend (T) -> Boolean,
+   f: suspend () -> T
+): T = until(duration = patience.duration, interval = patience.interval, predicate = predicate, listener = {}, f = f)
+
+@Deprecated("Simply move the listener code into the predicate code. Will be removed in 4.7 or 5.0")
+suspend fun <T> until(
    duration: Duration,
    interval: Interval = 1.seconds.fixed(),
-   f: () -> Boolean
-) = until(duration, interval, { it }, UntilListener.noop, f)
-
-@OptIn(ExperimentalTime::class)
-suspend fun <T> until(
-   duration: Duration,
-   predicate: (T) -> Boolean,
-   f: () -> T
-): T = until(duration, 1.seconds.fixed(), predicate, UntilListener.noop, f)
-
-@OptIn(ExperimentalTime::class)
-suspend fun <T> until(
-   duration: Duration,
-   interval: Interval,
-   predicate: (T) -> Boolean,
-   f: () -> T
-): T = until(duration, interval, predicate = predicate, listener = UntilListener.noop, f = f)
-
-/**
- * Executes a function until the given predicate returns true or the duration elapses.
- *
- * @param f the function to execute
- * @param predicate passed the result of the function f to evaluate if successful
- * @param listener notified on each invocation of f
- * @param duration the maximum amount of time to continue trying for success
- * @param interval the delay between invocations
- */
-@OptIn(ExperimentalTime::class)
-suspend fun <T> until(
-   duration: Duration,
-   interval: Interval,
-   predicate: (T) -> Boolean,
+   predicate: suspend (T) -> Boolean,
    listener: UntilListener<T>,
-   f: () -> T
+   f: suspend () -> T
 ): T {
-   val end = TimeSource.Monotonic.markNow().plus(duration)
-   var count = 0
+
+   val start = TimeSource.Monotonic.markNow()
+   val end = start.plus(duration)
+   var times = 0
+
    while (end.hasNotPassedNow()) {
       val result = f()
-      if (predicate(result)) {
+      listener.onEval(result)
+      if (predicate.invoke(result)) {
          return result
-      } else {
-         listener.onEval(result)
-         count++
       }
-      delay(interval.next(count).toLongMilliseconds())
+      times++
+      delay(interval.next(times))
    }
-   throw failure("Test failed after ${duration.toLongMilliseconds()}ms; attempted $count times")
+
+   val runtime = start.elapsedNow()
+   val message = "Until block failed after ${runtime}; attempted $times time(s); $interval delay between attempts"
+   throw failure(message)
 }

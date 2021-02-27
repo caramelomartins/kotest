@@ -25,6 +25,7 @@ kotlin {
 
       val jvmMain by getting {
          dependencies {
+            implementation(kotlin("stdlib"))
             implementation(kotlin("reflect"))
             implementation(Libs.Kotlin.kotlinScriptRuntime)
 
@@ -36,6 +37,11 @@ kotlin {
             // needed to scan the classpath for classes
             implementation(Libs.Classgraph.classgraph)
          }
+      }
+
+      all {
+         languageSettings.useExperimentalAnnotation("kotlin.time.ExperimentalTime")
+         languageSettings.useExperimentalAnnotation("kotlin.experimental.ExperimentalTypeInference")
       }
    }
 }

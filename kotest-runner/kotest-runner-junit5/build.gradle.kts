@@ -25,19 +25,17 @@ kotlin {
       }
    }
 
-   targets.all {
-      compilations.all {
-         kotlinOptions {
-            freeCompilerArgs = freeCompilerArgs + "-Xuse-experimental=kotlin.Experimental"
+   sourceSets {
+
+      val commonMain by getting {
+         dependencies {
+            implementation(kotlin("stdlib"))
+            implementation(kotlin("reflect"))
          }
       }
-   }
-
-   sourceSets {
 
       val jvmMain by getting {
          dependencies {
-            implementation(kotlin("reflect"))
             implementation(Libs.Kotlin.kotlinScriptRuntime)
             api(project(Projects.Api))
             api(project(Projects.Common))
@@ -61,6 +59,11 @@ kotlin {
             implementation(Libs.JUnitPlatform.testkit)
             implementation(Libs.Mocking.mockk)
          }
+      }
+
+      all {
+         languageSettings.useExperimentalAnnotation("kotlin.time.ExperimentalTime")
+         languageSettings.useExperimentalAnnotation("kotlin.experimental.ExperimentalTypeInference")
       }
    }
 }

@@ -30,6 +30,12 @@ module.exports = {
             },
             {
                type: 'doc',
+               docId: 'extensions/index',
+               label: 'Extensions',
+               position: 'left'
+            },
+            {
+               type: 'doc',
                docId: 'assertions/index',
                label: 'Assertions',
                position: 'left'
@@ -91,7 +97,7 @@ module.exports = {
          {
             docs: {
                sidebarPath: require.resolve('./sidebars.js'),
-               editUrl: 'https://github.com/kotest/kotest',
+               editUrl: 'https://github.com/kotest/kotest/blob/master/documentation',
             }
          },
       ],

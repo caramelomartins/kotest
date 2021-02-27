@@ -20,19 +20,17 @@ kotlin {
       }
    }
 
-   targets.all {
-      compilations.all {
-         kotlinOptions {
-            freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlin.RequiresOptIn"
+   sourceSets {
+
+      val commonMain by getting {
+         dependencies {
+            implementation(kotlin("stdlib"))
+            implementation(kotlin("reflect"))
          }
       }
-   }
-
-   sourceSets {
 
       val jvmTest by getting {
          dependencies {
-            implementation(kotlin("reflect"))
             implementation(project(Projects.Engine))
             implementation(project(Projects.AssertionsCore))
             // we use the internals of the JVM project in the tests
@@ -46,6 +44,11 @@ kotlin {
             // this is here to test that the intellij marker 'dummy' test doesn't appear in intellij
             implementation(Libs.JUnitJupiter.engine)
          }
+      }
+
+      all {
+         languageSettings.useExperimentalAnnotation("kotlin.time.ExperimentalTime")
+         languageSettings.useExperimentalAnnotation("kotlin.experimental.ExperimentalTypeInference")
       }
    }
 }
